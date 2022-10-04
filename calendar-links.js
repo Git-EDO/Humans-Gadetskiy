@@ -15,12 +15,48 @@ let linkToTheEvent = event.childNodes[1].href;
 // ... создаём текущий год для ссылки google-календаря
 const thisYear = new Date().getFullYear();
 
+let thisMonth;
+let thisDay;
+
 // ... создаём день и месяц из label "day"
 let linkDate = event.closest('.day').childNodes[1].textContent.split(' ');
-let month = linkDate[1].replace(',', '')
-let thisDay = linkDate[0]
 
-let thisMonth;
+// Если вместо конкретной даты "Сегодня":
+if(linkDate[0] === 'Сегодня') {
+const today = new Date();
+
+if(today.getDate() < 10) {
+thisDay = String(`0${today.getDate()}`);
+} else {
+thisDay = today.getDate();
+}
+
+if(today.getMonth() + 1 < 10) {
+thisMonth = `0${today.getMonth() + 1}`;
+}
+thisMonth = today.getMonth() + 1;
+
+// Если вместо конкретной даты стоит "Завтра":
+} else if (linkDate[0] === 'Завтра') {
+const today = new Date();
+const tomorrow = new Date(today.getTime() + (24 * 60 * 60 * 1000));
+
+if(tomorrow.getDate() < 10) {
+thisDay = `0${tomorrow.getDate()}`;
+} else {
+thisDay = tomorrow.getDate();
+}
+
+
+if(tomorrow.getMonth() + 1 < 10) {
+thisMonth = `0${tomorrow.getMonth() + 1}`;
+}
+thisMonth = tomorrow.getMonth() + 1;
+} else {
+
+// Если есть конкретная дата события:
+let month = linkDate[1].replace(',', '')
+thisDay = linkDate[0]
 
 // Преобразуем русские названия месяцев в числа-строки для google-календаря
 switch(month) {
@@ -61,8 +97,12 @@ case "Дек":
 thisMonth = String('12'); 
 break;
 }
+}
+
+
 
 // Создаём строку для google-календаря
+
 let calendareDate = `${thisYear}${thisMonth}${thisDay}T${thisTime}00`;
 
 // Создаём ссылку в ноде события для каждого мероприятия
